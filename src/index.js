@@ -8,9 +8,10 @@ export default class Draggable {
   constructor(container, options = {}) {
     this.createGuideLine();
     this.dragStart = this.dragStart.bind(this);
-    this.onMouseover = this.onMouseover.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.container = container;
+    this.moveY = 0;
     this.options = {
       draggable: options.draggable,
       handle: options.handle,
@@ -20,7 +21,8 @@ export default class Draggable {
       onStart: options.onStart,
       onMove: options.onMove,
       onEnd: options.onEnd,
-      onOver: options.onOver
+      onOver: options.onOver,
+      body: options.body || document.body
     };
     this.init();
   }
@@ -41,7 +43,7 @@ export default class Draggable {
     this.guideLine.remove();
     this.guideLine.style.left = `${-9999}px`;
     this.guideLine.style.top = `${-9999}px`;
-    document.removeEventListener('mousemove', this.onMouseover);
+    document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup', this.onMouseUp);
     if (this.direction && this.dropEl) {
       this.dropEl.insertAdjacentElement(this.direction, this.dragEl);
@@ -58,17 +60,44 @@ export default class Draggable {
     }
 
   }
-  onMouseover(_e) {
+  onMouseMove(_e) {
     if (!detectLeftButton(_e)) {
       this.guideLine.remove();
-      document.removeEventListener('mousemove', this.onMouseover);
+      document.removeEventListener('mousemove', this.onMouseMove);
     }
+    if (_e.clientY < this.moveY) {
+      this.mouseDirection = 'top';
+    } else if (_e.clientY > this.moveY) {
+      this.mouseDirection = 'bottom';
+    }
+    this.moveY = _e.clientY;
+    const scrollUp = () => window.scrollTo({
+      top: window.scrollY - 1,
+      left: 0
+    });
+    const scrollBottom = () => window.scrollTo({
+      top: window.scrollY + 1,
+      left: 0
+    });
+    const scroller = () => {
+      if (this.mirror && this.moveY < 50 && this.mouseDirection === 'top') {
+        scrollUp();
+        setTimeout(() => {
+          scroller();
+        }, 100);
+      } else if (this.mirror && window.innerHeight - this.moveY < 50 && this.mouseDirection === 'bottom') {
+        scrollBottom();
+        setTimeout(() => {
+          scroller();
+        }, 100);
+      }
+    };
+    scroller();
     if (this.mirror && this.dragEl) {
       this.mirror.style.left = `${_e.clientX}px`;
       this.mirror.style.top = `${_e.clientY}px`;
       this.mirror.style.display = 'none';
     }
-    const _moveY = _e.clientY;
     const _target = document.elementFromPoint(_e.clientX, _e.clientY);
     const dropEl = getImmediateChild(this.container, _target);
     if (this.mirror) {
@@ -85,14 +114,14 @@ export default class Draggable {
       this.guideLine.style.width = `${rect.width}px`;
       this.guideLine.style.height = '4px';
       // is mouse is on the top of the element
-      if (rect.bottom > _moveY && rect.bottom - rect.height / 2 < _moveY) {
+      if (rect.bottom > this.moveY && rect.bottom - rect.height / 2 < this.moveY) {
         this.direction = 'afterend';
         this.dropEl = dropEl;
         this.dragEl = this.dragEl;
         this.guideLine.style.top = `${_e.pageY - _e.pageY + window.pageYOffset
           + rect.top + rect.height}px`;
         this.guideLine.style.left = `${rect.left}px`;
-      } else if (rect.top < _moveY && rect.top + rect.height / 2 > _moveY) {
+      } else if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY) {
         this.dropEl = dropEl;
         this.direction = 'beforebegin';
         this.guideLine.style.top = `${_e.pageY - _e.pageY + window.pageYOffset
@@ -105,6 +134,7 @@ export default class Draggable {
   }
 
   dragStart(e) {
+
     document.body.appendChild(this.guideLine);
     const target = e.target;
     let draggableEl;
@@ -127,7 +157,7 @@ export default class Draggable {
     if (dragEl) {
       this.dragEl = dragEl;
       this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
-      document.addEventListener('mousemove', this.onMouseover);
+      document.addEventListener('mousemove', this.onMouseMove);
       document.addEventListener('mouseup', this.onMouseUp);
     }
   }
