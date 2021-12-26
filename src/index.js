@@ -22,7 +22,8 @@ export default class Draggable {
       onMove: options.onMove,
       onEnd: options.onEnd,
       onOver: options.onOver,
-      body: options.body || document.body
+      body: options.body || document.body,
+      clone: options.clone
     };
     this.init();
   }
@@ -46,7 +47,8 @@ export default class Draggable {
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup', this.onMouseUp);
     if (this.direction && this.dropEl) {
-      this.dropEl.insertAdjacentElement(this.direction, this.dragEl);
+      const droppableEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
+      this.dropEl.insertAdjacentElement(this.direction, droppableEl);
       this.newIndex = Array.prototype.indexOf.call(this.container.children, this.dragEl);
       if (this.options.onEnd === 'function') {
         this.options.onEnd({
@@ -141,11 +143,11 @@ export default class Draggable {
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) {return;}
+      if (!draggableEl) { return; }
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) {return;}
+      if (!handleEl) { return; }
     }
     if (typeof this.options.onStart === 'function') {
       this.options.onStart({
