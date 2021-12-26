@@ -3,7 +3,9 @@
 import detectLeftButton from './scripts/detectLeftButton';
 import getImmediateChild from './scripts/getImmediateChild';
 import renderMirrorImage from './scripts/renderMirrorImage';
-
+import containerStack from './containerStack';
+import classes from './style.css';
+debugger
 export default class Draggable {
   constructor(container, options = {}) {
     this.createGuideLine();
@@ -12,6 +14,11 @@ export default class Draggable {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.container = container;
     this.moveY = 0;
+    this.optionsInit(options);
+    containerStack.push(this);
+    this.init();
+  }
+  optionsInit(options) {
     this.options = {
       draggable: options.draggable,
       handle: options.handle,
@@ -21,15 +28,16 @@ export default class Draggable {
       onStart: options.onStart,
       onMove: options.onMove,
       onEnd: options.onEnd,
-      onOver: options.onOver,
       body: options.body || document.body,
-      clone: options.clone
+      clone: options.clone,
+      group: options.group,
+      sort: options.sort
     };
-    this.init();
   }
+
   createGuideLine() {
     this.guideLine = document.createElement('div');
-    this.guideLine.className = 'draggable-selector';
+    this.guideLine.className = classes.draggableSelector;
   }
 
   init() {
@@ -40,6 +48,7 @@ export default class Draggable {
       this.mirror.remove();
       this.mirror = null;
     }
+    delete this.dragEl.Sortable__container__;
     this.dragEl.style.opacity = 1;
     this.guideLine.remove();
     this.guideLine.style.left = `${-9999}px`;
@@ -52,6 +61,7 @@ export default class Draggable {
       this.newIndex = Array.prototype.indexOf.call(this.container.children, this.dragEl);
       if (this.options.onEnd === 'function') {
         this.options.onEnd({
+          item: droppableEl,
           to: this.container,
           from: this.container,
           newIndex: this.newIndex,
@@ -96,20 +106,39 @@ export default class Draggable {
     };
     scroller();
     if (this.mirror && this.dragEl) {
-      this.mirror.style.left = `${_e.clientX}px`;
-      this.mirror.style.top = `${_e.clientY}px`;
+      this.mirror.style.left = `${_e.clientX - document.body.offsetLeft - this.mirror.__offsetX}px`;
+      this.mirror.style.top = `${_e.clientY - document.body.offsetTop - this.mirror.__offsetY}px`;
       this.mirror.style.display = 'none';
     }
     const _target = document.elementFromPoint(_e.clientX, _e.clientY);
-    const dropEl = getImmediateChild(this.container, _target);
+    // here
+    let dropEl;
+    let dropInstance;
+    for (let index = 0; index < containerStack.length; index++) {
+      const current = containerStack[index];
+      const immediate = getImmediateChild(current.container, _target);
+      if (immediate) {
+        dropInstance = current;
+        dropEl = immediate;
+        break;
+      }
+    }
     if (this.mirror) {
       this.mirror.style.display = 'block';
     }
     if (dropEl && dropEl !== this.dragEl) {
-      if (!this.mirror) {
-        this.mirror = renderMirrorImage(this.dragEl, _e.clientX, _e.clientY);
+      if (dropInstance.options.sort === false) {
+        return;
       }
-
+      if (typeof this.options.onMove === 'function') {
+        this.options.onMove({
+          item: this.dragEl,
+          to: dropInstance.container,
+          from: this.container,
+          newIndex: Array.prototype.indexOf.call(dropInstance.container.children, dropEl),
+          oldIndex: Array.prototype.indexOf.call(this.container.children, this.dragEl)
+        });
+      }
       this.dragEl.style.opacity = 0.2;
       this.guideLine.style.opacity = 1;
       const rect = dropEl.getBoundingClientRect();
@@ -136,35 +165,41 @@ export default class Draggable {
   }
 
   dragStart(e) {
-
     document.body.appendChild(this.guideLine);
+
     const target = e.target;
     let draggableEl;
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) { return; }
+      if (!draggableEl) {return;}
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) { return; }
+      if (!handleEl) {return;}
+    }
+    const dragEl = getImmediateChild(this.container, target);
+    if (!dragEl) {return;}
+    if (!this.mirror) {
+      this.mirror = renderMirrorImage(dragEl, e.clientX, e.clientY);
     }
     if (typeof this.options.onStart === 'function') {
       this.options.onStart({
         from: this.container,
-        oldIndex: this.oldIndex
+        oldIndex: this.oldIndex,
+        item: dragEl
       });
     }
-    const dragEl = getImmediateChild(this.container, target);
-    if (dragEl) {
-      this.dragEl = dragEl;
-      this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
-      document.addEventListener('mousemove', this.onMouseMove);
-      document.addEventListener('mouseup', this.onMouseUp);
-    }
+    this.dragEl = dragEl;
+    this.dragEl.Sortable__container__ = this.container;
+    this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
+    document.addEventListener('mousemove', this.onMouseMove);
+    document.addEventListener('mouseup', this.onMouseUp);
+
   }
 
   bindDrag(container) {
+    container.style.userSelect = 'none';
     container.addEventListener('mousedown', this.dragStart);
   }
 }
