@@ -4,8 +4,9 @@ function renderMirrorImage(dragEl, clientX, clientY) {
   }
   let rect = dragEl.getBoundingClientRect();
   const _mirror = dragEl.cloneNode(true);
+  _mirror.style.position = 'fixed';
   _mirror.classList.add('mirror');
-  _mirror.style.opacity = 0.2;
+  _mirror.style.opacity = 0.5;
   _mirror.style.width = `${rect.width}px`;
   _mirror.style.height = `${rect.height}px`;
   _mirror.style.top = `${rect.top - window.pageYOffset}px`;
