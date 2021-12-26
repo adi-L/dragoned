@@ -8,9 +8,11 @@ function renderMirrorImage(dragEl, clientX, clientY) {
   _mirror.style.opacity = 0.2;
   _mirror.style.width = `${rect.width}px`;
   _mirror.style.height = `${rect.height}px`;
-  _mirror.style.top = `${rect.top}px`;
+  _mirror.style.top = `${rect.top - window.pageYOffset}px`;
   _mirror.style.left = `${rect.left}px`;
-  _mirror.style.transform = `translate(-${Math.abs(clientX - rect.left)}px, -${Math.abs(clientY - rect.top - rect.height / 2)}px)`;
+  _mirror.__offsetX = clientX - rect.left;
+  _mirror.__offsetY = clientY - rect.top;
+  // _mirror.style.transform = `translate(${Math.abs(clientX - rect.left - rect.width/2)}px, -${Math.abs(clientY - rect.top - rect.height / 2)}px)`;
   document.body.appendChild(_mirror);
   return _mirror;
 }
