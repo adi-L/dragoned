@@ -1,7 +1,8 @@
-import { getParent } from './getParent';
+import getParent from './getParent';
 
 export default function getImmediateChild(dropTarget, target) {
   let immediate = target;
+  // eslint-disable-next-line max-len
   while (immediate && immediate !== dropTarget && immediate && getParent(immediate) !== dropTarget) {
     immediate = getParent(immediate);
   }

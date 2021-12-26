@@ -4,8 +4,7 @@ import detectLeftButton from './scripts/detectLeftButton';
 import getImmediateChild from './scripts/getImmediateChild';
 import renderMirrorImage from './scripts/renderMirrorImage';
 import containerStack from './containerStack';
-import classes from './style.css';
-debugger
+
 export default class Draggable {
   constructor(container, options = {}) {
     this.createGuideLine();
@@ -37,7 +36,10 @@ export default class Draggable {
 
   createGuideLine() {
     this.guideLine = document.createElement('div');
-    this.guideLine.className = classes.draggableSelector;
+    this.guideLine.className = '__sortable_draggable-guide-line';
+    this.guideLine.style.position = 'absolute';
+    this.guideLine.style.borderRadius = `.5rem`;
+    this.guideLine.style.backgroundColor = 'rgb(70, 25, 194)';
   }
 
   init() {

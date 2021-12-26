@@ -1,1 +1,2 @@
-export function getParent(el) {return el && el.parentNode === document.body ? null : el && el.parentNode;}
+const getParent = el => el && el.parentNode === document.body ? null : el && el.parentNode;
+export default getParent;
