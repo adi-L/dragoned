@@ -182,14 +182,14 @@ export default class Draggable {
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) { return; }
+      if (!draggableEl) {return;}
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) { return; }
+      if (!handleEl) {return;}
     }
     const dragEl = getImmediateChild(this.container, target);
-    if (!dragEl) { return; }
+    if (!dragEl) {return;}
     if (!this.mirror) {
       this.mirror = renderMirrorImage(dragEl, clientX, clientY);
     }
