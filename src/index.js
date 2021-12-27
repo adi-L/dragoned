@@ -74,17 +74,21 @@ export default class Draggable {
     }
 
   }
-  onMouseMove(_e) {
-    if (!detectLeftButton(_e)) {
+  onMouseMove(event) {
+    event.preventDefault();
+    if (event.type === 'mousemove' && !detectLeftButton(event)) {
       this.guideLine.remove();
       document.removeEventListener('mousemove', this.onMouseMove);
     }
-    if (_e.clientY < this.moveY) {
+    const clientY = event.type === 'touchmove' ? event.touches[0].clientY : event.clientY;
+    const clientX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX;
+    const pageY = event.type === 'touchmove' ? event.touches[0].pageY : event.pageY;
+    if (clientY < this.moveY) {
       this.mouseDirection = 'top';
-    } else if (_e.clientY > this.moveY) {
+    } else if (clientY > this.moveY) {
       this.mouseDirection = 'bottom';
     }
-    this.moveY = _e.clientY;
+    this.moveY = clientY;
     const scrollUp = () => window.scrollTo({
       top: window.scrollY - 1,
       left: 0
@@ -108,11 +112,11 @@ export default class Draggable {
     };
     scroller();
     if (this.mirror && this.dragEl) {
-      this.mirror.style.left = `${_e.clientX - document.body.offsetLeft - this.mirror.__offsetX}px`;
-      this.mirror.style.top = `${_e.clientY - document.body.offsetTop - this.mirror.__offsetY}px`;
+      this.mirror.style.left = `${clientX - document.body.offsetLeft - this.mirror.__offsetX}px`;
+      this.mirror.style.top = `${clientY - document.body.offsetTop - this.mirror.__offsetY}px`;
       this.mirror.style.display = 'none';
     }
-    const _target = document.elementFromPoint(_e.clientX, _e.clientY);
+    const _target = document.elementFromPoint(clientX, clientY);
     // here
     let dropEl;
     let dropInstance;
@@ -151,13 +155,13 @@ export default class Draggable {
         this.direction = 'afterend';
         this.dropEl = dropEl;
         this.dragEl = this.dragEl;
-        this.guideLine.style.top = `${_e.pageY - _e.pageY + window.pageYOffset
+        this.guideLine.style.top = `${pageY - pageY + window.pageYOffset
           + rect.top + rect.height}px`;
         this.guideLine.style.left = `${rect.left}px`;
       } else if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY) {
         this.dropEl = dropEl;
         this.direction = 'beforebegin';
-        this.guideLine.style.top = `${_e.pageY - _e.pageY + window.pageYOffset
+        this.guideLine.style.top = `${pageY - pageY + window.pageYOffset
           + rect.top}px`;
         this.guideLine.style.left = `${rect.left}px`;
       }
@@ -166,24 +170,25 @@ export default class Draggable {
     }
   }
 
-  dragStart(e) {
+  dragStart(event) {
     document.body.appendChild(this.guideLine);
-
-    const target = e.target;
+    const clientY = event.type === 'touchstart' ? event.touches[0].clientY : event.clientY;
+    const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX;
+    const target = event.target;
     let draggableEl;
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) {return;}
+      if (!draggableEl) { return; }
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) {return;}
+      if (!handleEl) { return; }
     }
     const dragEl = getImmediateChild(this.container, target);
-    if (!dragEl) {return;}
+    if (!dragEl) { return; }
     if (!this.mirror) {
-      this.mirror = renderMirrorImage(dragEl, e.clientX, e.clientY);
+      this.mirror = renderMirrorImage(dragEl, clientX, clientY);
     }
     if (typeof this.options.onStart === 'function') {
       this.options.onStart({
@@ -196,12 +201,25 @@ export default class Draggable {
     this.dragEl.Sortable__container__ = this.container;
     this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
     document.addEventListener('mousemove', this.onMouseMove);
+    document.addEventListener('touchmove', this.onMouseMove, { passive: false });
     document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener('touchend', this.onMouseUp);
 
   }
 
   bindDrag(container) {
     container.style.userSelect = 'none';
     container.addEventListener('mousedown', this.dragStart);
+    container.addEventListener('touchstart', this.dragStart);
+  }
+  destroy() {
+    this.container.removeEventListener('mousedown', this.dragStart);
+    this.container.removeEventListener('touchstart', this.dragStart);
+    if (this.mirror) {
+      this.mirror.remove();
+    }
+    if (this.guideLine) {
+      this.guideLine.remove();
+    }
   }
 }

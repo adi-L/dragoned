@@ -29,9 +29,6 @@
   "keywords": [],
   "author": "Adi Levi <adilev3344@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": ""
-  },
   "homepage": "",
   "devDependencies": {
     "@babel/core": "^7.16.5",
