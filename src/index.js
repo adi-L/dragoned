@@ -216,6 +216,10 @@ export default class Draggable {
     container.addEventListener('touchstart', this.dragStart);
   }
   destroy() {
+    const index = containerStack.findIndex(c => c === this);
+    if (index !== -1) {
+      containerStack.splice(index, 1);
+    }
     this.container.removeEventListener('mousedown', this.dragStart);
     this.container.removeEventListener('touchstart', this.dragStart);
     if (this.mirror) {
