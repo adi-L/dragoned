@@ -56,7 +56,7 @@ export default class Dragoned {
       this.mirror.remove();
       this.mirror = null;
     }
-    delete this.dragEl.Sortable__container__;
+
     this.dragEl.style.opacity = 1;
     this.guideLine.remove();
     this.guideLine.style.left = `${-9999}px`;
@@ -67,11 +67,16 @@ export default class Dragoned {
       const droppableEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
       this.dropEl.insertAdjacentElement(this.direction, droppableEl);
       this.newIndex = Array.prototype.indexOf.call(this.container.children, this.dragEl);
-      if (this.options.onEnd === 'function') {
+      const to = this.dropEl.Sortable__container__;
+      const from = this.container;
+      delete this.dragEl.Sortable__container__;
+      delete this.dragEl.Sortable__container__;
+
+      if (typeof this.options.onEnd === 'function') {
         this.options.onEnd({
           item: droppableEl,
-          to: this.container,
-          from: this.container,
+          to,
+          from,
           newIndex: this.newIndex,
           oldIndex: this.oldIndex
 
@@ -132,6 +137,7 @@ export default class Dragoned {
       if (immediate) {
         dropInstance = current;
         dropEl = immediate;
+        dropEl.Sortable__container__ = current.container;
         break;
       }
     }
@@ -188,14 +194,14 @@ export default class Dragoned {
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) { return; }
+      if (!draggableEl) {return;}
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) { return; }
+      if (!handleEl) {return;}
     }
     const dragEl = getImmediateChild(this.container, target);
-    if (!dragEl) { return; }
+    if (!dragEl) {return;}
     if (!this.mirror) {
       this.mirror = renderMirrorImage(dragEl, clientX, clientY);
     }
