@@ -98,12 +98,12 @@ export default class Draggable {
       left: 0
     });
     const scroller = () => {
-      if (this.mirror && this.moveY < 50 && this.mouseDirection === 'top') {
+      if (this.mirror && this.moveY < 100 && this.mouseDirection === 'top') {
         scrollUp();
         setTimeout(() => {
           scroller();
         }, 100);
-      } else if (this.mirror && window.innerHeight - this.moveY < 50 && this.mouseDirection === 'bottom') {
+      } else if (this.mirror && window.innerHeight - this.moveY < 100 && this.mouseDirection === 'bottom') {
         scrollBottom();
         setTimeout(() => {
           scroller();
@@ -171,6 +171,9 @@ export default class Draggable {
   }
 
   dragStart(event) {
+    if (event.type === 'mousedown' && !detectLeftButton(event)) {
+      return;
+    }
     document.body.appendChild(this.guideLine);
     const clientY = event.type === 'touchstart' ? event.touches[0].clientY : event.clientY;
     const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX;
