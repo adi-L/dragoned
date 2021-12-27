@@ -5,8 +5,14 @@ import getImmediateChild from './scripts/getImmediateChild';
 import renderMirrorImage from './scripts/renderMirrorImage';
 import containerStack from './containerStack';
 
-export default class Draggable {
+export default class Dragoned {
   constructor(container, options = {}) {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container || !container instanceof HTMLElement) {
+      return new Error('Dragoned: container must be a string or an HTMLElement');
+    }
     this.createGuideLine();
     this.dragStart = this.dragStart.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
@@ -182,14 +188,14 @@ export default class Draggable {
     let handleEl;
     if (this.options.draggable) {
       draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) {return;}
+      if (!draggableEl) { return; }
     }
     if (this.options.handle) {
       handleEl = target.closest(this.options.handle);
-      if (!handleEl) {return;}
+      if (!handleEl) { return; }
     }
     const dragEl = getImmediateChild(this.container, target);
-    if (!dragEl) {return;}
+    if (!dragEl) { return; }
     if (!this.mirror) {
       this.mirror = renderMirrorImage(dragEl, clientX, clientY);
     }
