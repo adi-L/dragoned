@@ -80,7 +80,6 @@ export default class Dragoned {
           from,
           newIndex: this.newIndex,
           oldIndex: this.oldIndex
-
         });
       }
     }
