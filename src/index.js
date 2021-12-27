@@ -66,9 +66,10 @@ export default class Dragoned {
     if (this.direction && this.dropEl) {
       const droppableEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
       this.dropEl.insertAdjacentElement(this.direction, droppableEl);
-      this.newIndex = Array.prototype.indexOf.call(this.container.children, this.dragEl);
       const to = this.dropEl.Sortable__container__;
       const from = this.container;
+      this.newIndex = Array.prototype.indexOf.call(to.children, droppableEl);
+
       delete this.dragEl.Sortable__container__;
       delete this.dragEl.Sortable__container__;
 
