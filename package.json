@@ -1,8 +1,8 @@
 {
-  "name": "@adi/sortable",
+  "name": "@adi/dragoned",
   "version": "1.0.0",
   "description": "Another Sortable library but with the line",
-  "main": "lib/Library.js",
+  "main": "lib/Dragoned.js",
   "files": [
     "src/",
     "dist/",

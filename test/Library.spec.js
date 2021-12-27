@@ -10,13 +10,13 @@ chai.use(sinonChai);
 let library;
 
 // Replace with actual tests
-describe('Library', () => {
+describe('Dragoned', () => {
   beforeEach(() => library = new Library());
 
   it('should get the library\'s name', () => {
     const spy = sinon.spy(library, 'name');
     const name = library.name();
-    expect(name).to.eql('Library');
+    expect(name).to.eql('Dragoned');
     spy.restore();
     expect(spy).to.have.been.called;
   });
