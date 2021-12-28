@@ -9,7 +9,7 @@ function renderMirrorImage(dragEl, clientX, clientY) {
   _mirror.style.opacity = 0.5;
   _mirror.style.width = `${rect.width}px`;
   _mirror.style.height = `${rect.height}px`;
-  _mirror.style.top = `${rect.top - window.pageYOffset}px`;
+  _mirror.style.top = `${rect.top}px`;
   _mirror.style.left = `${rect.left}px`;
   _mirror.__offsetX = clientX - rect.left;
   _mirror.__offsetY = clientY - rect.top;
