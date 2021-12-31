@@ -1,6 +1,6 @@
 {
   "name": "dragoned",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Another Sortable library but with the line",
   "main": "lib/Dragoned.js",
   "files": [
@@ -24,10 +24,13 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/adi-L/dragoned.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adi-L/dragoned/issues"
   },
   "keywords": [],
-  "author": "Adi Levi <adilev3344@gmail.com>",
+  "author": "Adi Levi <adilev3344@gmail.com> (https://bit.ly/3xx3vTW)",
   "license": "MIT",
   "homepage": "",
   "devDependencies": {
