@@ -1,6 +1,6 @@
 {
   "name": "dragoned",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Another Sortable library but with the line",
   "main": "lib/Dragoned.js",
   "files": [
