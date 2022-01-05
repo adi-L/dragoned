@@ -2,7 +2,7 @@
  * dragoned
  * Another Sortable library but with the line
  *
- * @version v1.0.3
+ * @version v1.0.5
  * @author Adi Levi <adilev3344@gmail.com> (https://bit.ly/3xx3vTW)
  * @homepage
  * @repository https://github.com/adi-L/dragoned.git
@@ -27,6 +27,46 @@ return /******/ (function() { // webpackBootstrap
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 module.exports = __webpack_require__(/*! ./src */ "./src/index.js")["default"];
+
+/***/ }),
+
+/***/ "./src/constants.js":
+/*!**************************!*\
+  !*** ./src/constants.js ***!
+  \**************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "EVENTS": function() { return /* binding */ EVENTS; },
+/* harmony export */   "DIRECTIONS": function() { return /* binding */ DIRECTIONS; },
+/* harmony export */   "CLASS_NAMES": function() { return /* binding */ CLASS_NAMES; }
+/* harmony export */ });
+var EVENTS = {
+  TOUCH_MOVE: 'touchmove',
+  MOUSE_MOVE: 'mousemove',
+  MOUSE_UP: 'mouseup',
+  MOUSE_DOWN: 'mousedown',
+  TOUCH_END: 'touchend',
+  TOUCH_START: 'touchstart',
+  TOUCH_CANCEL: 'touchcancel',
+  DRAG_START: 'dragstart',
+  DRAG_END: 'dragend'
+};
+var DIRECTIONS = {
+  LEFT: 'left',
+  RIGHT: 'right',
+  UP: 'up',
+  DOWN: 'down',
+  TOP: 'top',
+  BOTTOM: 'bottom',
+  AFTEREND: 'afterend',
+  BEFOREBEGIN: 'beforebegin'
+};
+var CLASS_NAMES = {
+  guideLine: '__sortable_draggable-guide-line'
+};
 
 /***/ }),
 
@@ -58,6 +98,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_getImmediateChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/getImmediateChild */ "./src/scripts/getImmediateChild.js");
 /* harmony import */ var _scripts_renderMirrorImage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/renderMirrorImage */ "./src/scripts/renderMirrorImage.js");
 /* harmony import */ var _containerStack__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./containerStack */ "./src/containerStack.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./constants */ "./src/constants.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -65,6 +106,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 /* eslint-disable no-console */
+
 
 
 
@@ -117,7 +159,7 @@ var Dragoned = /*#__PURE__*/function () {
     key: "createGuideLine",
     value: function createGuideLine() {
       this.guideLine = document.createElement('div');
-      this.guideLine.className = '__sortable_draggable-guide-line';
+      this.guideLine.className = _constants__WEBPACK_IMPORTED_MODULE_4__.CLASS_NAMES.guideLine;
       this.guideLine.style.position = 'absolute';
       this.guideLine.style.borderRadius = ".5rem";
       this.guideLine.style.backgroundColor = 'rgb(70, 25, 194)';
@@ -139,8 +181,8 @@ var Dragoned = /*#__PURE__*/function () {
       this.guideLine.remove();
       this.guideLine.style.left = "".concat(-9999, "px");
       this.guideLine.style.top = "".concat(-9999, "px");
-      document.removeEventListener('mousemove', this.onMouseMove);
-      document.removeEventListener('mouseup', this.onMouseUp);
+      document.removeEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_MOVE, this.onMouseMove);
+      document.removeEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_UP, this.onMouseUp);
 
       if (this.direction && this.dropEl) {
         var droppableEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
@@ -169,19 +211,19 @@ var Dragoned = /*#__PURE__*/function () {
 
       event.preventDefault();
 
-      if (event.type === 'mousemove' && !(0,_scripts_detectLeftButton__WEBPACK_IMPORTED_MODULE_0__["default"])(event)) {
+      if (event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_MOVE && !(0,_scripts_detectLeftButton__WEBPACK_IMPORTED_MODULE_0__["default"])(event)) {
         this.guideLine.remove();
-        document.removeEventListener('mousemove', this.onMouseMove);
+        document.removeEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_MOVE, this.onMouseMove);
       }
 
-      var clientY = event.type === 'touchmove' ? event.touches[0].clientY : event.clientY;
-      var clientX = event.type === 'touchmove' ? event.touches[0].clientX : event.clientX;
-      var pageY = event.type === 'touchmove' ? event.touches[0].pageY : event.pageY;
+      var clientY = event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_MOVE ? event.touches[0].clientY : event.clientY;
+      var clientX = event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_MOVE ? event.touches[0].clientX : event.clientX;
+      var pageY = event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_MOVE ? event.touches[0].pageY : event.pageY;
 
       if (clientY < this.moveY) {
-        this.mouseDirection = 'top';
+        this.mouseDirection = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.TOP;
       } else if (clientY > this.moveY) {
-        this.mouseDirection = 'bottom';
+        this.mouseDirection = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.BOTTOM;
       }
 
       this.moveY = clientY;
@@ -201,12 +243,12 @@ var Dragoned = /*#__PURE__*/function () {
       };
 
       var scroller = function scroller() {
-        if (_this.mirror && _this.moveY < 100 && _this.mouseDirection === 'top') {
+        if (_this.mirror && _this.moveY < 100 && _this.mouseDirection === _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.TOP) {
           scrollUp();
           setTimeout(function () {
             scroller();
           }, 100);
-        } else if (_this.mirror && window.innerHeight - _this.moveY < 100 && _this.mouseDirection === 'bottom') {
+        } else if (_this.mirror && window.innerHeight - _this.moveY < 100 && _this.mouseDirection === _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.BOTTOM) {
           scrollBottom();
           setTimeout(function () {
             scroller();
@@ -266,14 +308,14 @@ var Dragoned = /*#__PURE__*/function () {
         this.guideLine.style.height = '4px'; // is mouse is on the top of the element
 
         if (rect.bottom > this.moveY && rect.bottom - rect.height / 2 < this.moveY) {
-          this.direction = 'afterend';
+          this.direction = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.AFTEREND;
           this.dropEl = dropEl;
           this.dragEl = this.dragEl;
           this.guideLine.style.top = "".concat(pageY - pageY + window.pageYOffset + rect.top + rect.height, "px");
           this.guideLine.style.left = "".concat(rect.left, "px");
         } else if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY) {
           this.dropEl = dropEl;
-          this.direction = 'beforebegin';
+          this.direction = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.BEFOREBEGIN;
           this.guideLine.style.top = "".concat(pageY - pageY + window.pageYOffset + rect.top, "px");
           this.guideLine.style.left = "".concat(rect.left, "px");
         }
@@ -284,13 +326,13 @@ var Dragoned = /*#__PURE__*/function () {
   }, {
     key: "dragStart",
     value: function dragStart(event) {
-      if (event.type === 'mousedown' && !(0,_scripts_detectLeftButton__WEBPACK_IMPORTED_MODULE_0__["default"])(event)) {
+      if (event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_DOWN && !(0,_scripts_detectLeftButton__WEBPACK_IMPORTED_MODULE_0__["default"])(event)) {
         return;
       }
 
       document.body.appendChild(this.guideLine);
-      var clientY = event.type === 'touchstart' ? event.touches[0].clientY : event.clientY;
-      var clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX;
+      var clientY = event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_START ? event.touches[0].clientY : event.clientY;
+      var clientX = event.type === _constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_START ? event.touches[0].clientX : event.clientX;
       var target = event.target;
       var draggableEl;
       var handleEl;
@@ -332,19 +374,19 @@ var Dragoned = /*#__PURE__*/function () {
       this.dragEl = dragEl;
       this.dragEl.Sortable__container__ = this.container;
       this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
-      document.addEventListener('mousemove', this.onMouseMove);
-      document.addEventListener('touchmove', this.onMouseMove, {
+      document.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_MOVE, this.onMouseMove);
+      document.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_MOVE, this.onMouseMove, {
         passive: false
       });
-      document.addEventListener('mouseup', this.onMouseUp);
-      document.addEventListener('touchend', this.onMouseUp);
+      document.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_UP, this.onMouseUp);
+      document.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_END, this.onMouseUp);
     }
   }, {
     key: "bindDrag",
     value: function bindDrag(container) {
       container.style.userSelect = 'none';
-      container.addEventListener('mousedown', this.dragStart);
-      container.addEventListener('touchstart', this.dragStart);
+      container.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_DOWN, this.dragStart);
+      container.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_START, this.dragStart);
     }
   }, {
     key: "destroy",
@@ -359,8 +401,8 @@ var Dragoned = /*#__PURE__*/function () {
         _containerStack__WEBPACK_IMPORTED_MODULE_3__["default"].splice(index, 1);
       }
 
-      this.container.removeEventListener('mousedown', this.dragStart);
-      this.container.removeEventListener('touchstart', this.dragStart);
+      this.container.removeEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_DOWN, this.dragStart);
+      this.container.removeEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_START, this.dragStart);
 
       if (this.mirror) {
         this.mirror.remove();
