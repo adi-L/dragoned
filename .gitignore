@@ -57,10 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
-# production
-dist
-lib
-
 # misc
 .DS_Store
-example/
