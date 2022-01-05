@@ -1,25 +1,30 @@
 # Dragoned
 
-### Dragoned.js is a library for drag-and-drop lists with diffrent sizes of height
+## Dragoned.js is a library for drag-and-drop lists with different sizes of height
 
-# Features
+### Features
 
 - Supports touch devices with touch events.
 - Can drag from one list to another.
 - Smart auto-scrolling on any device.
 - Easy to set up, plug & play!
 
-# Install
+### Examples
+
+- [Drag And Drop - Sandbox](https://codesandbox.io/s/h22hl?file=/src/index.js)
+- [Sortable - Sandbox](https://codesandbox.io/s/youthful-leftpad-b39ps?file=/index.html)
+
+### Install
 
 You can install it on npm.
 
-```
+```text
 npm install dragoned --save
 ```
 
-# Usage
+### Usage
 
-```
+```html
 <ul id="container">
  <li>item 1</li>
  <li>item 2</li>
@@ -27,27 +32,33 @@ npm install dragoned --save
 </ul>
 ```
 
-```
+```js
  new Dragoned(document.querySelector('#container'));
 ```
 
-# Options
+### Options
 
-```
+```js
  new Dragoned(container,{
      group:"group-name",
      sort: true,
      draggable:"query-selector", // which element inside the container should br braggable.
      handle:"handle-element", //  Drag handle selector within list items .
-     clone:true,
-     onStart:()=>{
+     clone:true, // Clone the item
+     onStart:({item, from, oldIndex})=>{
 
      },
-     onMove:()=>{
+     onMove:({item, from, to, newIndex, oldIndex})=>{
 
      },
-     onEnd:()=>{
+     onEnd:({item, from, to, newIndex, oldIndex})=>{
 
      }
  });
 ```
+
+## Contributing
+
+All contributions are super welcome!
+
+[Got questions? click here.](mailto:adilev3344@gmail.com)
