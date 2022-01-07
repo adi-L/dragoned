@@ -43,7 +43,7 @@ npm install dragoned --save
  new Dragoned(container,{
      group:"group-name",
      sort: true,
-     draggable:"query-selector", // which element inside the container should br braggable.
+     draggable:"query-selector", // which element inside the container should be draggable.
      handle:"handle-element", //  Drag handle selector within list items.
      clone:true, // Clone the item.
      delay: 100 // time in milliseconds to start.
