@@ -67,7 +67,9 @@ export default class Dragoned {
     this.guideLine.style.left = `${-9999}px`;
     this.guideLine.style.top = `${-9999}px`;
     document.removeEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
+    document.removeEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, { passive: false });
     document.removeEventListener(EVENTS.MOUSE_UP, this.dragEnd);
+    document.removeEventListener(EVENTS.TOUCH_END, this.dragEnd);
     if (this.direction && this.dropEl) {
       const cloneEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
       if (this.options.clone === true && typeof this.options.onClone === 'function') {
