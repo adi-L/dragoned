@@ -29,7 +29,7 @@
   "bugs": {
     "url": "https://github.com/adi-L/dragoned/issues"
   },
-  "keywords": [],
+  "keywords": ["sortable", "drag", "drop", "drag-and-drop", "drag-and-drop-list"],
   "author": "Adi Levi <adilev3344@gmail.com> (https://bit.ly/3xx3vTW)",
   "license": "MIT",
   "homepage": "",
