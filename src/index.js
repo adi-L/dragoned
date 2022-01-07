@@ -15,11 +15,13 @@ export default class Dragoned {
       return new Error('Dragoned: container must be a string or an HTMLElement');
     }
     this.createGuideLine();
+    this.onMouseUp = this.onMouseUp.bind(this);
     this.dragStart = this.dragStart.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.onMouseUp = this.onMouseUp.bind(this);
+    this.dragEnd = this.dragEnd.bind(this);
     this.container = container;
     this.moveY = 0;
+    this.mouseUp = false;
     this.optionsInit(options);
     containerStack.push(this);
     this.init();
@@ -28,11 +30,12 @@ export default class Dragoned {
     this.options = {
       draggable: options.draggable,
       handle: options.handle,
-      color: options.color,
+      delay: typeof options.delay === 'number' ? options.delay : 0,
       preventDefault: options.preventDefault,
       direction: options.direction,
       onStart: options.onStart,
       onMove: options.onMove,
+      onClone: options.onClone,
       onEnd: options.onEnd,
       body: options.body || document.body,
       clone: options.clone,
@@ -52,7 +55,8 @@ export default class Dragoned {
   init() {
     this.bindDrag(this.container);
   }
-  onMouseUp() {
+  dragEnd() {
+    this.mouseUp = true;
     if (this.mirror) {
       this.mirror.remove();
       this.mirror = null;
@@ -63,20 +67,27 @@ export default class Dragoned {
     this.guideLine.style.left = `${-9999}px`;
     this.guideLine.style.top = `${-9999}px`;
     document.removeEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
-    document.removeEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
+    document.removeEventListener(EVENTS.MOUSE_UP, this.dragEnd);
     if (this.direction && this.dropEl) {
-      const droppableEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
-      this.dropEl.insertAdjacentElement(this.direction, droppableEl);
+      const cloneEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
+      if (this.options.clone === true && typeof this.options.onClone === 'function') {
+        this.options.onClone({
+          from: this.container,
+          oldIndex: this.oldIndex,
+          clone: this.cloneEl
+        });
+      }
+      this.dropEl.insertAdjacentElement(this.direction, cloneEl);
       const to = this.dropEl.Sortable__container__;
       const from = this.container;
-      this.newIndex = Array.prototype.indexOf.call(to.children, droppableEl);
+      this.newIndex = Array.prototype.indexOf.call(to.children, cloneEl);
 
       delete this.dragEl.Sortable__container__;
       delete this.dragEl.Sortable__container__;
 
       if (typeof this.options.onEnd === 'function') {
         this.options.onEnd({
-          item: droppableEl,
+          item: cloneEl,
           to,
           from,
           newIndex: this.newIndex,
@@ -115,7 +126,9 @@ export default class Dragoned {
         setTimeout(() => {
           scroller();
         }, 100);
-      } else if (this.mirror && window.innerHeight - this.moveY < 100 && this.mouseDirection === DIRECTIONS.BOTTOM) {
+      } else if (this.mirror
+        && window.innerHeight - this.moveY < 100
+        && this.mouseDirection === DIRECTIONS.BOTTOM) {
         scrollBottom();
         setTimeout(() => {
           scroller();
@@ -182,45 +195,61 @@ export default class Dragoned {
       this.guideLine.style.opacity = 0.2;
     }
   }
-
+  onMouseUp() {
+    this.mouseUp = true;
+    clearTimeout(this.pressDelay);
+    document.removeEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
+  }
   dragStart(event) {
+    event.preventDefault();
+    this.mouseUp = false;
     if (event.type === EVENTS.MOUSE_DOWN && !detectLeftButton(event)) {
       return;
     }
-    document.body.appendChild(this.guideLine);
-    const clientY = event.type === EVENTS.TOUCH_START ? event.touches[0].clientY : event.clientY;
-    const clientX = event.type === EVENTS.TOUCH_START ? event.touches[0].clientX : event.clientX;
-    const target = event.target;
-    let draggableEl;
-    let handleEl;
-    if (this.options.draggable) {
-      draggableEl = target.closest(this.options.draggable);
-      if (!draggableEl) {return;}
-    }
-    if (this.options.handle) {
-      handleEl = target.closest(this.options.handle);
-      if (!handleEl) {return;}
-    }
-    const dragEl = getImmediateChild(this.container, target);
-    if (!dragEl) {return;}
-    if (!this.mirror) {
-      this.mirror = renderMirrorImage(dragEl, clientX, clientY);
-    }
-    if (typeof this.options.onStart === 'function') {
-      this.options.onStart({
-        from: this.container,
-        oldIndex: this.oldIndex,
-        item: dragEl
-      });
-    }
-    this.dragEl = dragEl;
-    this.dragEl.Sortable__container__ = this.container;
-    this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
-    document.addEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
-    document.addEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, { passive: false });
-    document.addEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
-    document.addEventListener(EVENTS.TOUCH_END, this.onMouseUp);
+    this.can = true;
+    // continue if user clicked for 1 second
+    const start = () => {
+      document.body.appendChild(this.guideLine);
+      const clientY = event.type === EVENTS.TOUCH_START ? event.touches[0].clientY : event.clientY;
+      const clientX = event.type === EVENTS.TOUCH_START ? event.touches[0].clientX : event.clientX;
+      const target = event.target;
+      let draggableEl;
+      let handleEl;
+      if (this.options.draggable) {
+        draggableEl = target.closest(this.options.draggable);
+        if (!draggableEl) {return;}
+      }
+      if (this.options.handle) {
+        handleEl = target.closest(this.options.handle);
+        if (!handleEl) {return;}
+      }
+      const dragEl = getImmediateChild(this.container, target);
+      if (!dragEl) {return;}
+      if (!this.mirror) {
+        this.mirror = renderMirrorImage(dragEl, clientX, clientY);
+      }
+      if (typeof this.options.onStart === 'function') {
+        this.options.onStart({
+          from: this.container,
+          oldIndex: this.oldIndex,
+          item: dragEl
+        });
+      }
+      this.dragEl = dragEl;
+      this.dragEl.Sortable__container__ = this.container;
+      this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
+      document.addEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
+      document.addEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, { passive: false });
+      document.addEventListener(EVENTS.MOUSE_UP, this.dragEnd);
+      document.addEventListener(EVENTS.TOUCH_END, this.dragEnd);
 
+    };
+    document.addEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
+    this.pressDelay = setTimeout(() => {
+      if (this.mouseUp === false) {
+        start();
+      }
+    }, this.options.delay);
   }
 
   bindDrag(container) {
