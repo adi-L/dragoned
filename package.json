@@ -32,7 +32,13 @@
   "bugs": {
     "url": "https://github.com/adi-L/dragoned/issues"
   },
-  "keywords": ["sortable", "drag", "drop", "drag-and-drop", "drag-and-drop-list"],
+  "keywords": [
+    "sortable",
+    "drag",
+    "drop",
+    "drag-and-drop",
+    "drag-and-drop-list"
+  ],
   "author": "Adi Levi <adilev3344@gmail.com> (https://bit.ly/3xx3vTW)",
   "license": "MIT",
   "homepage": "",
@@ -57,9 +63,5 @@
     "webpack-cli": "^4.9.1",
     "yargs": "^17.3.1"
   },
-  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead",
-  "dependencies": {
-    "contra": "^1.9.4",
-    "crossvent": "^1.5.5"
-  }
+  "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead"
 }
