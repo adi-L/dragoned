@@ -44,15 +44,22 @@ npm install dragoned --save
      group:"group-name",
      sort: true,
      draggable:"query-selector", // which element inside the container should br braggable.
-     handle:"handle-element", //  Drag handle selector within list items .
-     clone:true, // Clone the item
+     handle:"handle-element", //  Drag handle selector within list items.
+     clone:true, // Clone the item.
+     delay: 100 // time in milliseconds to start.
      onStart:({item, from, oldIndex})=>{
 
      },
+     // on move an item in the list or between lists
      onMove:({item, from, to, newIndex, oldIndex})=>{
 
      },
+     // on dragging ended
      onEnd:({item, from, to, newIndex, oldIndex})=>{
+
+     },
+     // on creating a clone of element
+     onClone:({item, from, oldIndex}) =>{
 
      }
  });
