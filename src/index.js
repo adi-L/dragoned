@@ -203,7 +203,6 @@ export default class Dragoned {
     document.removeEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
   }
   dragStart(event) {
-    event.preventDefault();
     this.mouseUp = false;
     if (event.type === EVENTS.MOUSE_DOWN && !detectLeftButton(event)) {
       return;
