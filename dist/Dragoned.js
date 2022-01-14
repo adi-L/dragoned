@@ -2,7 +2,7 @@
  * dragoned
  * Another Sortable library but with the line
  *
- * @version v1.0.9
+ * @version v1.0.10
  * @author Adi Levi <adilev3344@gmail.com> (https://bit.ly/3xx3vTW)
  * @homepage
  * @repository https://github.com/adi-L/dragoned.git
