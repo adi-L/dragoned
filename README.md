@@ -27,14 +27,14 @@ npm install dragoned --save
 
 ```html
 <ul id="container">
- <li>item 1</li>
- <li>item 2</li>
- <li>item 3</li>
+  <li>item 1</li>
+  <li>item 2</li>
+  <li>item 3</li>
 </ul>
 ```
 
 ```js
- new Dragoned(document.querySelector('#container'));
+new Dragoned(document.querySelector("#container"));
 ```
 
 ### Options
@@ -55,7 +55,7 @@ npm install dragoned --save
 
      },
      // on dragging ended
-     onEnd:({item, from, to, newIndex, oldIndex})=>{
+     onEnd:({item, from, to, newIndex, oldIndex,direction})=>{
 
      },
      // on creating a clone of element

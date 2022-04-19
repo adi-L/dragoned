@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../dist/Dragoned.js"></script>
+    <style>
+   
+ 
+        li {
+            min-height: 50px;
+            width: 100%;
+            background-color: #f5f5f5;
+            user-select: none;
+            padding: 20px;
+            margin:5px;
+            list-style: none;
+        }
+        #root {
+            width:500px;
+            height: 500px;
+            margin:auto;
+            overflow-y: scroll;;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root">
+        <ui class="draggable">
+            <li class="item">
+                <div class="handle">X</div>
+                <div>
+                    <h1>
+                        1.Aliquam tincidunt?
+                    </h1>
+                    <p>
+                        Aliquam tincidunt sapien non dui consectetur, at sodales erat commodo. Vestibulum gravida tellus vitae luctus dignissim. Phasellus dapibus maximus sem, non vulputate ex auctor at. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pretium, metus ac molestie tempus, mauris ipsum aliquam odio, sit amet pellentesque mi sem id mauris. Sed molestie tempor tellus, at fermentum neque. Fusce at orci lacinia, blandit diam sit amet, congue mauris. Etiam vel lorem massa. Duis sit amet sapien tempor, vestibulum lacus vitae, semper eros. Mauris pretium eu purus et suscipit. Nunc et tincidunt ligula, quis vehicula risus.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h1>
+                        2.Lorem ipsum dolor sit amet?
+                    </h1>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum placerat lectus, non rutrum ligula sagittis eget. Phasellus lorem eros, egestas eget dui ac, luctus tincidunt odio. Morbi rutrum ligula nec felis eleifend, a dapibus lectus tristique. Integer in lacus imperdiet, maximus justo a, blandit mauris. Nullam urna lectus, placerat eu diam eu, lacinia vestibulum nulla. Etiam est quam, dignissim eget dui sodales, euismod eleifend orci. In hac habitasse platea dictumst. Integer euismod ante tortor, sed bibendum ligula dapibus et.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h1>
+                        3.Nullam euismod luctus?
+                    </h1>
+                    <p>
+                        Nullam euismod luctus ipsum nec varius. Donec ac metus maximus, porttitor odio at, efficitur diam. Integer eu pulvinar diam. In sit amet leo eu velit egestas faucibus non ac velit. Nullam efficitur, ipsum vitae commodo sodales, mi purus pellentesque ante, eu fermentum purus tellus sed nulla. Vivamus aliquam massa augue, sed feugiat ante iaculis ut. Phasellus ullamcorper tincidunt neque. Nunc elementum neque nunc, et rhoncus arcu cursus sed. Nullam metus quam, fermentum quis metus eu, sodales scelerisque tortor. Pellentesque magna purus, fringilla in enim nec, ornare posuere elit. Aenean at risus dui. Pellentesque auctor justo sit amet urna laoreet, at ornare leo egestas. Fusce vulputate quis tortor tempus vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc facilisis, nisi et maximus vulputate, sapien nisi posuere felis, a sollicitudin ipsum metus at est.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h1>
+                        4.Nullam euismod luctus?
+                    </h1>
+                    <p>
+                        Nullam euismod luctus ipsum nec varius. Donec ac metus maximus, porttitor odio at, efficitur diam. Integer eu pulvinar diam. In sit amet leo eu velit egestas faucibus non ac velit. Nullam efficitur, ipsum vitae commodo sodales, mi purus pellentesque ante, eu fermentum purus tellus sed nulla. Vivamus aliquam massa augue, sed feugiat ante iaculis ut. Phasellus ullamcorper tincidunt neque. Nunc elementum neque nunc, et rhoncus arcu cursus sed. Nullam metus quam, fermentum quis metus eu, sodales scelerisque tortor. Pellentesque magna purus, fringilla in enim nec, ornare posuere elit. Aenean at risus dui. Pellentesque auctor justo sit amet urna laoreet, at ornare leo egestas. Fusce vulputate quis tortor tempus vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc facilisis, nisi et maximus vulputate, sapien nisi posuere felis, a sollicitudin ipsum metus at est.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h1>
+                        5.Nullam euismod luctus?
+                    </h1>
+                    <p>
+                        Nullam euismod luctus ipsum nec varius. Donec ac metus maximus, porttitor odio at, efficitur diam. Integer eu pulvinar diam. In sit amet leo eu velit egestas faucibus non ac velit. Nullam efficitur, ipsum vitae commodo sodales, mi purus pellentesque ante, eu fermentum purus tellus sed nulla. Vivamus aliquam massa augue, sed feugiat ante iaculis ut. Phasellus ullamcorper tincidunt neque. Nunc elementum neque nunc, et rhoncus arcu cursus sed. Nullam metus quam, fermentum quis metus eu, sodales scelerisque tortor. Pellentesque magna purus, fringilla in enim nec, ornare posuere elit. Aenean at risus dui. Pellentesque auctor justo sit amet urna laoreet, at ornare leo egestas. Fusce vulputate quis tortor tempus vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc facilisis, nisi et maximus vulputate, sapien nisi posuere felis, a sollicitudin ipsum metus at est.
+                    </p>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h1>
+                        6.Nullam euismod luctus?
+                    </h1>
+                    <p>
+                        Nullam euismod luctus ipsum nec varius. Donec ac metus maximus, porttitor odio at, efficitur diam. Integer eu pulvinar diam. In sit amet leo eu velit egestas faucibus non ac velit. Nullam efficitur, ipsum vitae commodo sodales, mi purus pellentesque ante, eu fermentum purus tellus sed nulla. Vivamus aliquam massa augue, sed feugiat ante iaculis ut. Phasellus ullamcorper tincidunt neque. Nunc elementum neque nunc, et rhoncus arcu cursus sed. Nullam metus quam, fermentum quis metus eu, sodales scelerisque tortor. Pellentesque magna purus, fringilla in enim nec, ornare posuere elit. Aenean at risus dui. Pellentesque auctor justo sit amet urna laoreet, at ornare leo egestas. Fusce vulputate quis tortor tempus vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nunc facilisis, nisi et maximus vulputate, sapien nisi posuere felis, a sollicitudin ipsum metus at est.
+                    </p>
+                </div>
+            </li>
+        </ui>
+    </div>
+    <script>
+        (function () {
+            const draggable = new Dragoned(document.querySelector('.draggable'));
+        })();
+    </script>
+</body>
+
+</html>

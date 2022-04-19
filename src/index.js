@@ -1,18 +1,20 @@
 /* eslint-disable no-console */
 
-import detectLeftButton from './scripts/detectLeftButton';
-import getImmediateChild from './scripts/getImmediateChild';
-import renderMirrorImage from './scripts/renderMirrorImage';
-import containerStack from './containerStack';
-import { EVENTS, DIRECTIONS, CLASS_NAMES } from './constants';
+import detectLeftButton from "./scripts/detectLeftButton";
+import getImmediateChild from "./scripts/getImmediateChild";
+import renderMirrorImage from "./scripts/renderMirrorImage";
+import containerStack from "./containerStack";
+import { EVENTS, DIRECTIONS, CLASS_NAMES } from "./constants";
 
 export default class Dragoned {
   constructor(container, options = {}) {
-    if (typeof container === 'string') {
+    if (typeof container === "string") {
       container = document.querySelector(container);
     }
     if (!container || !container instanceof HTMLElement) {
-      return new Error('Dragoned: container must be a string or an HTMLElement');
+      return new Error(
+        "Dragoned: container must be a string or an HTMLElement"
+      );
     }
     this.createGuideLine();
     this.onMouseUp = this.onMouseUp.bind(this);
@@ -21,6 +23,7 @@ export default class Dragoned {
     this.dragEnd = this.dragEnd.bind(this);
     this.container = container;
     this.moveY = 0;
+    this.moveX = 0;
     this.mouseUp = false;
     this.optionsInit(options);
     containerStack.push(this);
@@ -30,7 +33,7 @@ export default class Dragoned {
     this.options = {
       draggable: options.draggable,
       handle: options.handle,
-      delay: typeof options.delay === 'number' ? options.delay : 0,
+      delay: typeof options.delay === "number" ? options.delay : 0,
       preventDefault: options.preventDefault,
       direction: options.direction,
       onStart: options.onStart,
@@ -40,16 +43,16 @@ export default class Dragoned {
       body: options.body || document.body,
       clone: options.clone,
       group: options.group,
-      sort: options.sort
+      sort: options.sort,
     };
   }
 
   createGuideLine() {
-    this.guideLine = document.createElement('div');
+    this.guideLine = document.createElement("div");
     this.guideLine.className = CLASS_NAMES.guideLine;
-    this.guideLine.style.position = 'absolute';
+    this.guideLine.style.position = "absolute";
     this.guideLine.style.borderRadius = `.5rem`;
-    this.guideLine.style.backgroundColor = 'rgb(70, 25, 194)';
+    this.guideLine.style.backgroundColor = "rgb(70, 25, 194)";
   }
 
   init() {
@@ -67,16 +70,22 @@ export default class Dragoned {
     this.guideLine.style.left = `${-9999}px`;
     this.guideLine.style.top = `${-9999}px`;
     document.removeEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
-    document.removeEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, { passive: false });
+    document.removeEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, {
+      passive: false,
+    });
     document.removeEventListener(EVENTS.MOUSE_UP, this.dragEnd);
     document.removeEventListener(EVENTS.TOUCH_END, this.dragEnd);
     if (this.direction && this.dropEl) {
-      const cloneEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
-      if (this.options.clone === true && typeof this.options.onClone === 'function') {
+      const cloneEl =
+        this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
+      if (
+        this.options.clone === true &&
+        typeof this.options.onClone === "function"
+      ) {
         this.options.onClone({
           from: this.container,
           oldIndex: this.oldIndex,
-          clone: this.cloneEl
+          clone: this.cloneEl,
         });
       }
       this.dropEl.insertAdjacentElement(this.direction, cloneEl);
@@ -87,17 +96,17 @@ export default class Dragoned {
       delete this.dragEl.Sortable__container__;
       delete this.dragEl.Sortable__container__;
 
-      if (typeof this.options.onEnd === 'function') {
+      if (typeof this.options.onEnd === "function") {
         this.options.onEnd({
           item: cloneEl,
           to,
           from,
           newIndex: this.newIndex,
-          oldIndex: this.oldIndex
+          oldIndex: this.oldIndex,
+          direction: this.direction,
         });
       }
     }
-
   }
   onMouseMove(event) {
     event.preventDefault();
@@ -105,45 +114,73 @@ export default class Dragoned {
       this.guideLine.remove();
       document.removeEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
     }
-    const clientY = event.type === EVENTS.TOUCH_MOVE ? event.touches[0].clientY : event.clientY;
-    const clientX = event.type === EVENTS.TOUCH_MOVE ? event.touches[0].clientX : event.clientX;
-    const pageY = event.type === EVENTS.TOUCH_MOVE ? event.touches[0].pageY : event.pageY;
+    const clientY =
+      event.type === EVENTS.TOUCH_MOVE
+        ? event.touches[0].clientY
+        : event.clientY;
+    const clientX =
+      event.type === EVENTS.TOUCH_MOVE
+        ? event.touches[0].clientX
+        : event.clientX;
+    const pageY =
+      event.type === EVENTS.TOUCH_MOVE ? event.touches[0].pageY : event.pageY;
     if (clientY < this.moveY) {
       this.mouseDirection = DIRECTIONS.TOP;
     } else if (clientY > this.moveY) {
       this.mouseDirection = DIRECTIONS.BOTTOM;
     }
     this.moveY = clientY;
-    const scrollUp = () => window.scrollTo({
-      top: window.scrollY - 1,
-      left: 0
-    });
-    const scrollBottom = () => window.scrollTo({
-      top: window.scrollY + 1,
-      left: 0
-    });
-    const scroller = () => {
-      if (this.mirror && this.moveY < 100 && this.mouseDirection === DIRECTIONS.TOP) {
+    this.moveX = clientX;
+    function getScrollParent(node) {
+      if (node == null) {
+        return null;
+      }
+
+      if (node.scrollHeight > node.clientHeight) {
+        return node;
+      } else {
+        return getScrollParent(node.parentNode);
+      }
+    }
+
+    const scroller = (_target) => {
+      let scrollableEl = getScrollParent(_target) || document.body;
+      console.log(scrollableEl);
+      const scrollUp = () => scrollableEl.scroll(0, scrollableEl.scrollTop - 1);
+      const scrollBottom = () =>
+        scrollableEl.scroll(0, scrollableEl.scrollTop + 1);
+      if (
+        this.mirror &&
+        this.moveY < 100 &&
+        this.mouseDirection === DIRECTIONS.TOP
+      ) {
         scrollUp();
         setTimeout(() => {
           scroller();
         }, 100);
-      } else if (this.mirror
-        && window.innerHeight - this.moveY < 100
-        && this.mouseDirection === DIRECTIONS.BOTTOM) {
+      } else if (
+        this.mirror &&
+        window.innerHeight - this.moveY < 100 &&
+        this.mouseDirection === DIRECTIONS.BOTTOM
+      ) {
         scrollBottom();
         setTimeout(() => {
           scroller();
         }, 100);
       }
     };
-    scroller();
+
     if (this.mirror && this.dragEl) {
-      this.mirror.style.left = `${clientX - document.body.offsetLeft - this.mirror.__offsetX}px`;
-      this.mirror.style.top = `${clientY - document.body.offsetTop - this.mirror.__offsetY}px`;
-      this.mirror.style.display = 'none';
+      this.mirror.style.left = `${
+        clientX - document.body.offsetLeft - this.mirror.__offsetX
+      }px`;
+      this.mirror.style.top = `${
+        clientY - document.body.offsetTop - this.mirror.__offsetY
+      }px`;
+      this.mirror.style.display = "none";
     }
     const _target = document.elementFromPoint(clientX, clientY);
+    scroller(_target);
     // here
     let dropEl;
     let dropInstance;
@@ -158,43 +195,84 @@ export default class Dragoned {
       }
     }
     if (this.mirror) {
-      this.mirror.style.display = 'block';
+      this.mirror.style.display = "block";
     }
     if (dropEl && dropEl !== this.dragEl) {
       if (dropInstance.options.sort === false) {
         return;
       }
-      if (typeof this.options.onMove === 'function') {
+      if (typeof this.options.onMove === "function") {
         this.options.onMove({
           item: this.dragEl,
           to: dropInstance.container,
           from: this.container,
-          newIndex: Array.prototype.indexOf.call(dropInstance.container.children, dropEl),
-          oldIndex: Array.prototype.indexOf.call(this.container.children, this.dragEl)
+          newIndex: Array.prototype.indexOf.call(
+            dropInstance.container.children,
+            dropEl
+          ),
+          oldIndex: Array.prototype.indexOf.call(
+            this.container.children,
+            this.dragEl
+          ),
         });
       }
       this.dragEl.style.opacity = 0.2;
       this.guideLine.style.opacity = 1;
       const rect = dropEl.getBoundingClientRect();
       this.guideLine.style.width = `${rect.width}px`;
-      this.guideLine.style.height = '4px';
+      this.guideLine.style.height = "4px";
       // is mouse is on the top of the element
-      if (rect.bottom > this.moveY && rect.bottom - rect.height / 2 < this.moveY) {
+      if (
+        rect.bottom > this.moveY &&
+        rect.bottom - rect.height / 2 < this.moveY
+      ) {
         this.direction = DIRECTIONS.AFTEREND;
         this.dropEl = dropEl;
         this.dragEl = this.dragEl;
-        this.guideLine.style.top = `${pageY - pageY + window.pageYOffset
-          + rect.top + rect.height}px`;
+        this.guideLine.style.top = `${
+          pageY - pageY + window.pageYOffset + rect.top + rect.height
+        }px`;
         this.guideLine.style.left = `${rect.left}px`;
-      } else if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY) {
+      } else if (
+        rect.top < this.moveY &&
+        rect.top + rect.height / 2 > this.moveY
+      ) {
         this.dropEl = dropEl;
         this.direction = DIRECTIONS.BEFOREBEGIN;
-        this.guideLine.style.top = `${pageY - pageY + window.pageYOffset
-          + rect.top}px`;
+        this.guideLine.style.top = `${
+          pageY - pageY + window.pageYOffset + rect.top
+        }px`;
         this.guideLine.style.left = `${rect.left}px`;
       }
-    } else {
-      this.guideLine.style.opacity = 0.2;
+      if (
+        rect.top < this.moveY &&
+        rect.top + rect.height / 2 > this.moveY &&
+        rect.left < this.moveX &&
+        rect.left + rect.width / 4 > this.moveX
+      ) {
+        this.dropEl = dropEl;
+        this.direction = DIRECTIONS.LEFT;
+        this.guideLine.style.height = rect.height + "px";
+        this.guideLine.style.width = "4px";
+        this.guideLine.style.top = `${
+          pageY - pageY + window.pageYOffset + rect.top
+        }px`;
+        this.guideLine.style.left = `${rect.left}px`;
+      } else if (
+        rect.top < this.moveY &&
+        rect.top + rect.height / 2 > this.moveY &&
+        rect.right > this.moveX &&
+        rect.right - rect.width / 4 < this.moveX
+      ) {
+        this.dropEl = dropEl;
+        this.direction = DIRECTIONS.RIGHT;
+        this.guideLine.style.height = rect.height + "px";
+        this.guideLine.style.width = "4px";
+        this.guideLine.style.top = `${
+          pageY - pageY + window.pageYOffset + rect.top
+        }px`;
+        this.guideLine.style.left = `${rect.left + rect.width}px`;
+      }
     }
   }
   onMouseUp() {
@@ -211,39 +289,55 @@ export default class Dragoned {
     // continue if user clicked for 1 second
     const start = () => {
       document.body.appendChild(this.guideLine);
-      const clientY = event.type === EVENTS.TOUCH_START ? event.touches[0].clientY : event.clientY;
-      const clientX = event.type === EVENTS.TOUCH_START ? event.touches[0].clientX : event.clientX;
+      const clientY =
+        event.type === EVENTS.TOUCH_START
+          ? event.touches[0].clientY
+          : event.clientY;
+      const clientX =
+        event.type === EVENTS.TOUCH_START
+          ? event.touches[0].clientX
+          : event.clientX;
       const target = event.target;
       let draggableEl;
       let handleEl;
       if (this.options.draggable) {
         draggableEl = target.closest(this.options.draggable);
-        if (!draggableEl) {return;}
+        if (!draggableEl) {
+          return;
+        }
       }
       if (this.options.handle) {
         handleEl = target.closest(this.options.handle);
-        if (!handleEl) {return;}
+        if (!handleEl) {
+          return;
+        }
       }
       const dragEl = getImmediateChild(this.container, target);
-      if (!dragEl) {return;}
+      if (!dragEl) {
+        return;
+      }
       if (!this.mirror) {
         this.mirror = renderMirrorImage(dragEl, clientX, clientY);
       }
-      if (typeof this.options.onStart === 'function') {
+      if (typeof this.options.onStart === "function") {
         this.options.onStart({
           from: this.container,
           oldIndex: this.oldIndex,
-          item: dragEl
+          item: dragEl,
         });
       }
       this.dragEl = dragEl;
       this.dragEl.Sortable__container__ = this.container;
-      this.oldIndex = Array.prototype.indexOf.call(this.container.children, dragEl);
+      this.oldIndex = Array.prototype.indexOf.call(
+        this.container.children,
+        dragEl
+      );
       document.addEventListener(EVENTS.MOUSE_MOVE, this.onMouseMove);
-      document.addEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, { passive: false });
+      document.addEventListener(EVENTS.TOUCH_MOVE, this.onMouseMove, {
+        passive: false,
+      });
       document.addEventListener(EVENTS.MOUSE_UP, this.dragEnd);
       document.addEventListener(EVENTS.TOUCH_END, this.dragEnd);
-
     };
     document.addEventListener(EVENTS.MOUSE_UP, this.onMouseUp);
     this.pressDelay = setTimeout(() => {
@@ -254,12 +348,12 @@ export default class Dragoned {
   }
 
   bindDrag(container) {
-    container.style.userSelect = 'none';
+    container.style.userSelect = "none";
     container.addEventListener(EVENTS.MOUSE_DOWN, this.dragStart);
     container.addEventListener(EVENTS.TOUCH_START, this.dragStart);
   }
   destroy() {
-    const index = containerStack.findIndex(c => c === this);
+    const index = containerStack.findIndex((c) => c === this);
     if (index !== -1) {
       containerStack.splice(index, 1);
     }

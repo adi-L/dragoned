@@ -44,28 +44,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "CLASS_NAMES": function() { return /* binding */ CLASS_NAMES; }
 /* harmony export */ });
 var EVENTS = {
-  TOUCH_MOVE: 'touchmove',
-  MOUSE_MOVE: 'mousemove',
-  MOUSE_UP: 'mouseup',
-  MOUSE_DOWN: 'mousedown',
-  TOUCH_END: 'touchend',
-  TOUCH_START: 'touchstart',
-  TOUCH_CANCEL: 'touchcancel',
-  DRAG_START: 'dragstart',
-  DRAG_END: 'dragend'
+  TOUCH_MOVE: "touchmove",
+  MOUSE_MOVE: "mousemove",
+  MOUSE_UP: "mouseup",
+  MOUSE_DOWN: "mousedown",
+  TOUCH_END: "touchend",
+  TOUCH_START: "touchstart",
+  TOUCH_CANCEL: "touchcancel",
+  DRAG_START: "dragstart",
+  DRAG_END: "dragend"
 };
 var DIRECTIONS = {
-  LEFT: 'left',
-  RIGHT: 'right',
-  UP: 'up',
-  DOWN: 'down',
-  TOP: 'top',
-  BOTTOM: 'bottom',
-  AFTEREND: 'afterend',
-  BEFOREBEGIN: 'beforebegin'
+  LEFT: "left",
+  RIGHT: "right",
+  UP: "up",
+  DOWN: "down",
+  TOP: "top",
+  BOTTOM: "bottom",
+  AFTEREND: "afterend",
+  BEFOREBEGIN: "beforebegin"
 };
 var CLASS_NAMES = {
-  guideLine: '__sortable_draggable-guide-line'
+  guideLine: "__sortable_draggable-guide-line"
 };
 
 /***/ }),
@@ -118,12 +118,12 @@ var Dragoned = /*#__PURE__*/function () {
 
     _classCallCheck(this, Dragoned);
 
-    if (typeof container === 'string') {
+    if (typeof container === "string") {
       container = document.querySelector(container);
     }
 
     if (!container || !container instanceof HTMLElement) {
-      return new Error('Dragoned: container must be a string or an HTMLElement');
+      return new Error("Dragoned: container must be a string or an HTMLElement");
     }
 
     this.createGuideLine();
@@ -133,6 +133,7 @@ var Dragoned = /*#__PURE__*/function () {
     this.dragEnd = this.dragEnd.bind(this);
     this.container = container;
     this.moveY = 0;
+    this.moveX = 0;
     this.mouseUp = false;
     this.optionsInit(options);
     _containerStack__WEBPACK_IMPORTED_MODULE_3__["default"].push(this);
@@ -145,7 +146,7 @@ var Dragoned = /*#__PURE__*/function () {
       this.options = {
         draggable: options.draggable,
         handle: options.handle,
-        delay: typeof options.delay === 'number' ? options.delay : 0,
+        delay: typeof options.delay === "number" ? options.delay : 0,
         preventDefault: options.preventDefault,
         direction: options.direction,
         onStart: options.onStart,
@@ -161,11 +162,11 @@ var Dragoned = /*#__PURE__*/function () {
   }, {
     key: "createGuideLine",
     value: function createGuideLine() {
-      this.guideLine = document.createElement('div');
+      this.guideLine = document.createElement("div");
       this.guideLine.className = _constants__WEBPACK_IMPORTED_MODULE_4__.CLASS_NAMES.guideLine;
-      this.guideLine.style.position = 'absolute';
+      this.guideLine.style.position = "absolute";
       this.guideLine.style.borderRadius = ".5rem";
-      this.guideLine.style.backgroundColor = 'rgb(70, 25, 194)';
+      this.guideLine.style.backgroundColor = "rgb(70, 25, 194)";
     }
   }, {
     key: "init",
@@ -196,7 +197,7 @@ var Dragoned = /*#__PURE__*/function () {
       if (this.direction && this.dropEl) {
         var cloneEl = this.options.clone === true ? this.dragEl.cloneNode(true) : this.dragEl;
 
-        if (this.options.clone === true && typeof this.options.onClone === 'function') {
+        if (this.options.clone === true && typeof this.options.onClone === "function") {
           this.options.onClone({
             from: this.container,
             oldIndex: this.oldIndex,
@@ -211,13 +212,14 @@ var Dragoned = /*#__PURE__*/function () {
         delete this.dragEl.Sortable__container__;
         delete this.dragEl.Sortable__container__;
 
-        if (typeof this.options.onEnd === 'function') {
+        if (typeof this.options.onEnd === "function") {
           this.options.onEnd({
             item: cloneEl,
             to: to,
             from: from,
             newIndex: this.newIndex,
-            oldIndex: this.oldIndex
+            oldIndex: this.oldIndex,
+            direction: this.direction
           });
         }
       }
@@ -245,22 +247,32 @@ var Dragoned = /*#__PURE__*/function () {
       }
 
       this.moveY = clientY;
+      this.moveX = clientX;
 
-      var scrollUp = function scrollUp() {
-        return window.scrollTo({
-          top: window.scrollY - 1,
-          left: 0
-        });
-      };
+      function getScrollParent(node) {
+        if (node == null) {
+          return null;
+        }
 
-      var scrollBottom = function scrollBottom() {
-        return window.scrollTo({
-          top: window.scrollY + 1,
-          left: 0
-        });
-      };
+        if (node.scrollHeight > node.clientHeight) {
+          return node;
+        } else {
+          return getScrollParent(node.parentNode);
+        }
+      }
 
-      var scroller = function scroller() {
+      var scroller = function scroller(_target) {
+        var scrollableEl = getScrollParent(_target) || document.body;
+        console.log(scrollableEl);
+
+        var scrollUp = function scrollUp() {
+          return scrollableEl.scroll(0, scrollableEl.scrollTop - 1);
+        };
+
+        var scrollBottom = function scrollBottom() {
+          return scrollableEl.scroll(0, scrollableEl.scrollTop + 1);
+        };
+
         if (_this.mirror && _this.moveY < 100 && _this.mouseDirection === _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.TOP) {
           scrollUp();
           setTimeout(function () {
@@ -274,16 +286,15 @@ var Dragoned = /*#__PURE__*/function () {
         }
       };
 
-      scroller();
-
       if (this.mirror && this.dragEl) {
         this.mirror.style.left = "".concat(clientX - document.body.offsetLeft - this.mirror.__offsetX, "px");
         this.mirror.style.top = "".concat(clientY - document.body.offsetTop - this.mirror.__offsetY, "px");
-        this.mirror.style.display = 'none';
+        this.mirror.style.display = "none";
       }
 
-      var _target = document.elementFromPoint(clientX, clientY); // here
+      var _target = document.elementFromPoint(clientX, clientY);
 
+      scroller(_target); // here
 
       var dropEl;
       var dropInstance;
@@ -301,7 +312,7 @@ var Dragoned = /*#__PURE__*/function () {
       }
 
       if (this.mirror) {
-        this.mirror.style.display = 'block';
+        this.mirror.style.display = "block";
       }
 
       if (dropEl && dropEl !== this.dragEl) {
@@ -309,7 +320,7 @@ var Dragoned = /*#__PURE__*/function () {
           return;
         }
 
-        if (typeof this.options.onMove === 'function') {
+        if (typeof this.options.onMove === "function") {
           this.options.onMove({
             item: this.dragEl,
             to: dropInstance.container,
@@ -323,7 +334,7 @@ var Dragoned = /*#__PURE__*/function () {
         this.guideLine.style.opacity = 1;
         var rect = dropEl.getBoundingClientRect();
         this.guideLine.style.width = "".concat(rect.width, "px");
-        this.guideLine.style.height = '4px'; // is mouse is on the top of the element
+        this.guideLine.style.height = "4px"; // is mouse is on the top of the element
 
         if (rect.bottom > this.moveY && rect.bottom - rect.height / 2 < this.moveY) {
           this.direction = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.AFTEREND;
@@ -337,8 +348,22 @@ var Dragoned = /*#__PURE__*/function () {
           this.guideLine.style.top = "".concat(pageY - pageY + window.pageYOffset + rect.top, "px");
           this.guideLine.style.left = "".concat(rect.left, "px");
         }
-      } else {
-        this.guideLine.style.opacity = 0.2;
+
+        if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY && rect.left < this.moveX && rect.left + rect.width / 4 > this.moveX) {
+          this.dropEl = dropEl;
+          this.direction = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.LEFT;
+          this.guideLine.style.height = rect.height + "px";
+          this.guideLine.style.width = "4px";
+          this.guideLine.style.top = "".concat(pageY - pageY + window.pageYOffset + rect.top, "px");
+          this.guideLine.style.left = "".concat(rect.left, "px");
+        } else if (rect.top < this.moveY && rect.top + rect.height / 2 > this.moveY && rect.right > this.moveX && rect.right - rect.width / 4 < this.moveX) {
+          this.dropEl = dropEl;
+          this.direction = _constants__WEBPACK_IMPORTED_MODULE_4__.DIRECTIONS.RIGHT;
+          this.guideLine.style.height = rect.height + "px";
+          this.guideLine.style.width = "4px";
+          this.guideLine.style.top = "".concat(pageY - pageY + window.pageYOffset + rect.top, "px");
+          this.guideLine.style.left = "".concat(rect.left + rect.width, "px");
+        }
       }
     }
   }, {
@@ -395,7 +420,7 @@ var Dragoned = /*#__PURE__*/function () {
           _this2.mirror = (0,_scripts_renderMirrorImage__WEBPACK_IMPORTED_MODULE_2__["default"])(dragEl, clientX, clientY);
         }
 
-        if (typeof _this2.options.onStart === 'function') {
+        if (typeof _this2.options.onStart === "function") {
           _this2.options.onStart({
             from: _this2.container,
             oldIndex: _this2.oldIndex,
@@ -424,7 +449,7 @@ var Dragoned = /*#__PURE__*/function () {
   }, {
     key: "bindDrag",
     value: function bindDrag(container) {
-      container.style.userSelect = 'none';
+      container.style.userSelect = "none";
       container.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.MOUSE_DOWN, this.dragStart);
       container.addEventListener(_constants__WEBPACK_IMPORTED_MODULE_4__.EVENTS.TOUCH_START, this.dragStart);
     }
